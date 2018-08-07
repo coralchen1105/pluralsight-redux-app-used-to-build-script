@@ -1,12 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {Redirect} from 'react-router-dom';
-import {bindActionCreators} from 'redux';
-import * as courseActions from '../../actions/courseActions';
-import CourseForm from './CourseForm';
-import {authorsFormattedForDropdown} from '../../selectors/selectors';
-import toastr from 'toastr';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
+import { bindActionCreators } from "redux";
+import * as courseActions from "../../actions/courseActions";
+import CourseForm from "./CourseForm";
+import { authorsFormattedForDropdown } from "../../selectors/selectors";
+import toastr from "toastr";
 
 export class ManageCoursePage extends React.Component {
   constructor(props, context) {
@@ -36,7 +36,7 @@ export class ManageCoursePage extends React.Component {
     // Fix: Clone state to avoid manipulating below.
     let course = Object.assign({}, this.state.course);
     course[field] = event.target.value;
-    return this.setState({course: course});
+    return this.setState({ course: course });
   }
 
   courseFormIsValid() {
@@ -44,11 +44,11 @@ export class ManageCoursePage extends React.Component {
     let errors = {};
 
     if (this.state.course.title.length < 5) {
-      errors.title = 'Title must be at least 5 characters.';
+      errors.title = "Title must be at least 5 characters.";
       formIsValid = false;
     }
 
-    this.setState({errors: errors});
+    this.setState({ errors: errors });
     return formIsValid;
   }
 
@@ -59,18 +59,20 @@ export class ManageCoursePage extends React.Component {
       return;
     }
 
-    this.setState({saving: true});
-    this.props.actions.saveCourse(this.state.course)
+    this.setState({ saving: true });
+    // call action function saveCourse()
+    this.props.actions
+      .saveCourse(this.state.course)
       .then(() => this.redirect())
       .catch(error => {
         toastr.error(error);
-        this.setState({saving: false});
+        this.setState({ saving: false });
       });
   }
 
   redirect() {
-    this.setState({saving: false, redirect: true});
-    toastr.success('Course saved.');
+    this.setState({ saving: false, redirect: true });
+    toastr.success("Course saved.");
   }
 
   render() {
@@ -104,10 +106,18 @@ function getCourseById(courses, id) {
   return null;
 }
 
+// map state to particular component to use data for this component
 function mapStateToProps(state, ownProps) {
   const courseId = ownProps.match.params.id; // from the path `/course/:id`
 
-  let course = {id: '', watchHref: '', title: '', authorId: '', length: '', category: ''};
+  let course = {
+    id: "",
+    watchHref: "",
+    title: "",
+    authorId: "",
+    length: "",
+    category: ""
+  };
 
   if (courseId && state.courses.length > 0) {
     course = getCourseById(state.courses, courseId);
@@ -125,4 +135,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ManageCoursePage);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ManageCoursePage);
